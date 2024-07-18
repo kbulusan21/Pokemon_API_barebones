@@ -1,18 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <meta charset="utf-8" />
 
-  </head>
-  <body>
-    <main>
-      <textarea id="input"></textarea>
-      <button onclick="getPokemon()">Check Pokemon</button><br>
-      <img src="." id = "s1" width = "150" height = "200" >
-      <img src="." id = "s2" width = "150" height = "200" ><br>
-      <container id = "info">Enter Pokemon Info</container><br>
-    </main>
-    <script src="sketch.js"></script>
-  </body>
-</html>
+async function getPokemon(){
+  let normal = document.getElementById("s1");
+  let shiny = document.getElementById("s2");
+  let info = document.getElementById("info");
+
+  let input = document.getElementById("input");
+  try{
+    const response = await(fetch(`https://pokeapi.co/api/v2/pokemon/${input.value.toLowerCase()}`));
+    
+    if(!response.ok)
+    {
+      throw new Error("Can't get pokemon");
+    }
+    const data = await response.json();
+    normal.src = data.sprites.front_default;
+    shiny.src = data.sprites.front_shiny;
+    let msg = `<h1>${data.species.name}<h1><br><h3>Abilities<h3><br>`;
+    for(let i = 0; i<data.abilities.length;i++){
+      msg += `<h5>${data.abilities[i].ability.name}<h5><br>`;
+    }
+    info.innerHTML = msg;
+    input.value="";
+    
+    
+  }
+  catch(error){
+    console.error(error);
+  }
+}
